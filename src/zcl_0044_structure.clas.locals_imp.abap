@@ -60,7 +60,6 @@ CLASS lcl_connection IMPLEMENTATION.
       RAISE EXCEPTION TYPE cx_abap_invalid_value.
     ENDIF.
 
-
     me->carrier_id = i_carrier_id.
     me->connection_id = i_connection_id.
 
