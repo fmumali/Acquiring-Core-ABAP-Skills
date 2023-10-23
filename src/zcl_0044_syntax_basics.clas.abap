@@ -23,16 +23,18 @@ CLASS zcl_0044_syntax_basics IMPLEMENTATION.
                  name
              INTO text.
 
-text = `Hello`.
-text = name.
+    text = `Hello`.
+    text = name.
 
-text = replace(  val  = `Hello World`
-                 sub  = `world`
-                 with = name ).
+    text = replace(  val  = `Hello World`
+                     sub  = `world`
+                     with = name ).
 
-text = COND #(  WHEN text = `` THEN `Hello` && name
-                ELSE text ).
+    text = COND #(  WHEN text = `` THEN `Hello` && name
+                    ELSE text ).
 
     out->write( text ).
+
+
   ENDMETHOD.
 ENDCLASS.
