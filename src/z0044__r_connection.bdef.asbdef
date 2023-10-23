@@ -24,6 +24,13 @@ authorization master( global )
    UUID;
 
 
+  field ( readonly )
+    CityFrom,
+    CountryFrom,
+    CityTo,
+    CountryTo;
+
+
   create;
   update;
   delete;

@@ -6,14 +6,18 @@ define root view entity Z0044_C_CONNECTION
   as projection on Z0044__R_CONNECTION
 {
   key UUID,
-  CarrierID,
-  ConnectionID,
-  AirportFromID,
-  CityFrom,
-  CountryFrom,
-  AirportToID,
-  CityTo,
-  CountryTo,
-  LocalLastChangedAt
-  
+      @Consumption.valueHelpDefinition:
+      [{ entity: { name: 'Z0044_I_CarrierVH',
+                   element: 'CarrierID' }
+                    }]
+      CarrierID,
+      ConnectionID,
+      AirportFromID,
+      CityFrom,
+      CountryFrom,
+      AirportToID,
+      CityTo,
+      CountryTo,
+      LocalLastChangedAt
+
 }
