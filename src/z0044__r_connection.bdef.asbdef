@@ -9,6 +9,8 @@ etag master LocalLastChangedAt
 lock master total etag LastChangedAt
 authorization master( global )
 
+
+
 {
   field ( readonly )
    UUID,
@@ -49,4 +51,6 @@ authorization master( global )
     LocalLastChangedAt = local_last_changed_at;
     LastChangedAt = last_changed_at;
   }
+
+  validation CheckSemanticKey on save { create; update; }
 }
