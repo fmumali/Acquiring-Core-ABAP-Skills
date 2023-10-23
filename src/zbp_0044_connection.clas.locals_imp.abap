@@ -10,7 +10,9 @@ CLASS lhc_connection DEFINITION INHERITING FROM cl_abap_behavior_handler.
       CheckCerrierID FOR VALIDATE ON SAVE
         IMPORTING keys FOR Connection~CheckCerrierID,
       CheckOriginDestination FOR VALIDATE ON SAVE
-            IMPORTING keys FOR Connection~CheckOriginDestination.
+        IMPORTING keys FOR Connection~CheckOriginDestination,
+      GetCities FOR DETERMINE ON SAVE
+        IMPORTING keys FOR Connection~GetCities.
 ENDCLASS.
 
 CLASS lhc_connection IMPLEMENTATION.
@@ -127,11 +129,11 @@ CLASS lhc_connection IMPLEMENTATION.
   METHOD CheckOriginDestination.
 
 
-     READ ENTITIES OF z0044__r_Connection IN LOCAL MODE
-            ENTITY Connection
-            FIELDS ( AirportFromID AirportToID )
-              WITH CORRESPONDING #(  keys )
-            RESULT DATA(connections).
+    READ ENTITIES OF z0044__r_Connection IN LOCAL MODE
+           ENTITY Connection
+           FIELDS ( AirportFromID AirportToID )
+             WITH CORRESPONDING #(  keys )
+           RESULT DATA(connections).
 
 
     LOOP AT connections INTO DATA(connection).
@@ -158,6 +160,54 @@ CLASS lhc_connection IMPLEMENTATION.
 
       ENDIF.
     ENDLOOP.
+
+
+
+  ENDMETHOD.
+
+  METHOD GetCities.
+
+
+    READ ENTITIES OF z0044__r_connection IN LOCAL MODE
+           ENTITY Connection
+           FIELDS ( AirportFromID AirportToID )
+             WITH CORRESPONDING #( keys )
+           RESULT DATA(connections).
+
+
+    LOOP AT connections INTO DATA(connection).
+
+      SELECT SINGLE
+        FROM /DMO/I_Airport
+      FIELDS city, CountryCode
+       WHERE AirportID = @connection-AirportFromID
+        INTO ( @connection-CityFrom, @connection-CountryTo ).
+
+      SELECT SINGLE
+        FROM /DMO/I_Airport
+      FIELDS city, CountryCode
+       WHERE AirportID = @connection-AirportToID
+        INTO ( @connection-CityTo, @connection-CountryTo ).
+
+      MODIFY connections FROM connection.
+
+    ENDLOOP.
+
+
+    DATA connections_upd TYPE TABLE FOR UPDATE z0044__r_connection.
+
+    connections_upd = CORRESPONDING #( connections ).
+
+
+    MODIFY ENTITIES OF z0044__r_connection IN LOCAL MODE
+             ENTITY Connection
+             UPDATE
+             FIELDS ( CityFrom CountryFrom CityTo CountryTo )
+               WITH connections_upd
+           REPORTED DATA(reported_records).
+
+    reported-connection = CORRESPONDING #( reported_records-connection ).
+
 
 
 
