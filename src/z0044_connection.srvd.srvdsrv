@@ -1,0 +1,4 @@
+@EndUserText.label: 'Service definition for Z0044_C_CONNECTION'
+define service Z0044_CONNECTION {
+  expose Z0044_C_CONNECTION as Connection;
+}
