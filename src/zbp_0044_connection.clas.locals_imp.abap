@@ -8,7 +8,9 @@ CLASS lhc_connection DEFINITION INHERITING FROM cl_abap_behavior_handler.
       CheckSemanticKey FOR VALIDATE ON SAVE
         IMPORTING keys FOR Connection~CheckSemanticKey,
       CheckCerrierID FOR VALIDATE ON SAVE
-        IMPORTING keys FOR Connection~CheckCerrierID.
+        IMPORTING keys FOR Connection~CheckCerrierID,
+      CheckOriginDestination FOR VALIDATE ON SAVE
+            IMPORTING keys FOR Connection~CheckOriginDestination.
 ENDCLASS.
 
 CLASS lhc_connection IMPLEMENTATION.
@@ -114,6 +116,45 @@ CLASS lhc_connection IMPLEMENTATION.
 
         failed_record-%tky = connection-%tky.
         APPEND failed_Record TO failed-connection.
+
+      ENDIF.
+    ENDLOOP.
+
+
+
+  ENDMETHOD.
+
+  METHOD CheckOriginDestination.
+
+
+     READ ENTITIES OF z0044__r_Connection IN LOCAL MODE
+            ENTITY Connection
+            FIELDS ( AirportFromID AirportToID )
+              WITH CORRESPONDING #(  keys )
+            RESULT DATA(connections).
+
+
+    LOOP AT connections INTO DATA(connection).
+      IF connection-AirportFromID = connection-AirportToID.
+        DATA(message) = me->new_message(
+                          id       = 'ZS4D400'
+                          number   = '003'
+                          severity = ms-error
+                       ).
+
+        DATA reported_record LIKE LINE OF reported-connection.
+
+        reported_record-%tky =  connection-%tky.
+        reported_record-%msg = message.
+        reported_record-%element-AirportFromID = if_abap_behv=>mk-on.
+        reported_record-%element-AirportToID   = if_abap_behv=>mk-on.
+
+        APPEND reported_record TO reported-connection.
+
+        DATA failed_record LIKE LINE OF failed-connection.
+
+        failed_record-%tky = connection-%tky.
+        APPEND failed_record TO failed-connection.
 
       ENDIF.
     ENDLOOP.
