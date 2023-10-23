@@ -53,4 +53,5 @@ authorization master( global )
   }
 
   validation CheckSemanticKey on save { create; update; }
+  validation CheckCerrierID on save { create; field CarrierID; }
 }
